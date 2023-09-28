@@ -1,5 +1,8 @@
 package br.com.alura.adopet.api.controller;
 
+import br.com.alura.adopet.api.dto.AprovacaoAdocaoDTO;
+import br.com.alura.adopet.api.dto.ReprovacaoAdocaoDTO;
+import br.com.alura.adopet.api.dto.SolicitacaoAdocaoDTO;
 import br.com.alura.adopet.api.model.Adocao;
 import br.com.alura.adopet.api.service.AdocaoService;
 import jakarta.validation.Valid;
@@ -22,9 +25,9 @@ public class AdocaoController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<String> solicitar(@RequestBody @Valid Adocao adocao) {
+    public ResponseEntity<String> solicitar(@RequestBody @Valid SolicitacaoAdocaoDTO solicitacaoAdocao) {
         try {
-            adocaoService.solicitar(adocao);
+            adocaoService.solicitar(solicitacaoAdocao);
             return ResponseEntity.ok("Adoção solicitada com sucesso!");
         } catch (ValidationException ve) {
             return ResponseEntity.badRequest().body(ve.getMessage());
@@ -33,15 +36,15 @@ public class AdocaoController {
 
     @PutMapping("/aprovar")
     @Transactional
-    public ResponseEntity<String> aprovar(@RequestBody @Valid Adocao adocao) {
-        adocaoService.aprovar(adocao);
+    public ResponseEntity<String> aprovar(@RequestBody @Valid AprovacaoAdocaoDTO aprovacaoAdocao) {
+        adocaoService.aprovar(aprovacaoAdocao);
         return ResponseEntity.ok("Adoção aprovada com sucesso!");
     }
 
     @PutMapping("/reprovar")
     @Transactional
-    public ResponseEntity<String> reprovar(@RequestBody @Valid Adocao adocao) {
-        adocaoService.reprovar(adocao);
+    public ResponseEntity<String> reprovar(@RequestBody @Valid ReprovacaoAdocaoDTO reprovacaoAdocao) {
+        adocaoService.reprovar(reprovacaoAdocao);
         return ResponseEntity.ok("Adoção foi reprovada!");
     }
 
