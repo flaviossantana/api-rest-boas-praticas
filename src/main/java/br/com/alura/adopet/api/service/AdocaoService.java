@@ -10,16 +10,14 @@ import br.com.alura.adopet.api.model.Tutor;
 import br.com.alura.adopet.api.repository.AdocaoRepository;
 import br.com.alura.adopet.api.repository.PetRepository;
 import br.com.alura.adopet.api.repository.TutorRepository;
-import br.com.alura.adopet.api.validacao.ValidaLimiteMaximoAdocao;
-import br.com.alura.adopet.api.validacao.ValidaPetAdocaoEmAndamento;
-import br.com.alura.adopet.api.validacao.ValidaTutorAdocaoEmAndamento;
-import br.com.alura.adopet.api.validacao.ValidacaoPetDisponivel;
+import br.com.alura.adopet.api.validacao.ValidacaoSolicitacaoAdocao;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static br.com.alura.adopet.api.model.StatusAdocao.AGUARDANDO_AVALIACAO;
 
@@ -39,26 +37,14 @@ public class AdocaoService {
     private AdocaoRepository adocaoRepository;
 
     @Autowired
-    private ValidacaoPetDisponivel validacaoPetDisponivel;
-
-    @Autowired
-    private ValidaLimiteMaximoAdocao validaLimiteMaximoAdocao;
-
-    @Autowired
-    private ValidaPetAdocaoEmAndamento validaPetAdocaoEmAndamento;
-
-    @Autowired
-    private ValidaTutorAdocaoEmAndamento validaTutorAdocaoEmAndamento;
+    private List<ValidacaoSolicitacaoAdocao> validacoes;
 
     public void solicitar(@Valid SolicitacaoAdocaoDTO solicitacaoAdocao) {
 
+        validacoes.forEach(validacao -> validacao.validar(solicitacaoAdocao));
+
         Pet pet = petRepository.getReferenceById(solicitacaoAdocao.idPet());
         Tutor tutor = tutorRepository.getReferenceById(solicitacaoAdocao.idTutor());
-
-        validacaoPetDisponivel.validar(solicitacaoAdocao);
-        validaPetAdocaoEmAndamento.validar(solicitacaoAdocao);
-        validaTutorAdocaoEmAndamento.validar(solicitacaoAdocao);
-        validaLimiteMaximoAdocao.validar(solicitacaoAdocao);
 
         adocaoRepository.save(
                 Adocao.builder()

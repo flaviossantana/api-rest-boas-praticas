@@ -14,7 +14,7 @@ import java.util.List;
 import static br.com.alura.adopet.api.model.StatusAdocao.AGUARDANDO_AVALIACAO;
 
 @Component
-public class ValidaPetAdocaoEmAndamento {
+public class ValidaPetAdocaoEmAndamento implements ValidacaoSolicitacaoAdocao{
 
     @Autowired
     private PetRepository petRepository;
