@@ -1,11 +1,10 @@
 package br.com.alura.adopet.api.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,14 +39,12 @@ public class Adocao {
     @Column(name = "data")
     private LocalDateTime data;
 
-    @ManyToOne
-    @JsonBackReference("tutor_adocoes")
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tutor_id")
     private Tutor tutor;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pet_id")
-    @JsonManagedReference("adocao_pets")
     private Pet pet;
 
     @Column(name = "motivo")
