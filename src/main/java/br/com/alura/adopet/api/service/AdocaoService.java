@@ -5,7 +5,6 @@ import br.com.alura.adopet.api.dto.ReprovacaoAdocaoDTO;
 import br.com.alura.adopet.api.dto.SolicitacaoAdocaoDTO;
 import br.com.alura.adopet.api.model.Adocao;
 import br.com.alura.adopet.api.model.Pet;
-import br.com.alura.adopet.api.model.StatusAdocao;
 import br.com.alura.adopet.api.model.Tutor;
 import br.com.alura.adopet.api.repository.AdocaoRepository;
 import br.com.alura.adopet.api.repository.PetRepository;
@@ -15,11 +14,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
-import static br.com.alura.adopet.api.model.StatusAdocao.AGUARDANDO_AVALIACAO;
 
 @Service
 public class AdocaoService {
@@ -46,15 +42,7 @@ public class AdocaoService {
         Pet pet = petRepository.getReferenceById(solicitacaoAdocao.idPet());
         Tutor tutor = tutorRepository.getReferenceById(solicitacaoAdocao.idTutor());
 
-        adocaoRepository.save(
-                Adocao.builder()
-                        .data(LocalDateTime.now())
-                        .status(AGUARDANDO_AVALIACAO)
-                        .tutor(tutor)
-                        .pet(pet)
-                        .motivo(solicitacaoAdocao.motivo())
-                        .build()
-        );
+        adocaoRepository.save(new Adocao(tutor, pet, solicitacaoAdocao.motivo()));
 
         emailService.enviar(
                 pet.getAbrigo().getEmail(),
@@ -69,7 +57,7 @@ public class AdocaoService {
     public void aprovar(@Valid AprovacaoAdocaoDTO aprovacaoAdocao) {
 
         Adocao adocao = adocaoRepository.getReferenceById(aprovacaoAdocao.idAdocao());
-        adocao.setStatus(StatusAdocao.APROVADO);
+        adocao.aprovada();
 
         emailService.enviar(
                 adocao.getTutor().getEmail(),
@@ -81,8 +69,7 @@ public class AdocaoService {
     public void reprovar(@Valid ReprovacaoAdocaoDTO reprovacaoAdocao) {
 
         Adocao adocao = adocaoRepository.getReferenceById(reprovacaoAdocao.idAdocao());
-        adocao.setStatus(StatusAdocao.REPROVADO);
-        adocao.setMotivo(reprovacaoAdocao.justificativa());
+        adocao.reprovada(reprovacaoAdocao.justificativa());
 
         emailService.enviar(
                 adocao.getTutor().getEmail(),

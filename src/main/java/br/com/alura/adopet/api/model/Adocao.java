@@ -56,5 +56,21 @@ public class Adocao {
 
     @Column(name = "justificativa_status")
     private String justificativaStatus;
+
+    public Adocao(Tutor tutor, Pet pet, String motivo) {
+        this.tutor = tutor;
+        this.pet = pet;
+        this.motivo = motivo;
+    }
+
+    public void aprovada() {
+        this.status = StatusAdocao.APROVADO;
+    }
+
+    public void reprovada(String justificativa) {
+        this.status = StatusAdocao.REPROVADO;
+        this.justificativaStatus = justificativa;
+    }
+
 }
 
