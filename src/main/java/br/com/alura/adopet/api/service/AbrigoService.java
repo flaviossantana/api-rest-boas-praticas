@@ -1,12 +1,13 @@
 package br.com.alura.adopet.api.service;
 
+import br.com.alura.adopet.api.dto.CadastroAbrigoDTO;
 import br.com.alura.adopet.api.model.Abrigo;
 import br.com.alura.adopet.api.model.Pet;
 import br.com.alura.adopet.api.repository.AbrigoRepository;
+import br.com.alura.adopet.api.validacao.abrigo.ValidacaoCadastroAbrigo;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,21 +20,23 @@ public class AbrigoService {
     @Autowired
     private AbrigoRepository repository;
 
+    @Autowired
+    private List<ValidacaoCadastroAbrigo> validacoes;
+
     public List<Abrigo> buscarTodos() {
         return repository.findAll();
     }
 
-    public void cadastrar(Abrigo abrigo) {
-        boolean nomeJaCadastrado = repository.existsByNome(abrigo.getNome());
-        boolean telefoneJaCadastrado = repository.existsByTelefone(abrigo.getTelefone());
-        boolean emailJaCadastrado = repository.existsByEmail(abrigo.getEmail());
+    public void cadastrar(@Valid CadastroAbrigoDTO abrigo) {
 
-        if (nomeJaCadastrado || telefoneJaCadastrado || emailJaCadastrado) {
-            ResponseEntity.badRequest().body("Dados já cadastrados para outro abrigo!");
-        } else {
-            repository.save(abrigo);
-            ResponseEntity.ok().build();
-        }
+        validacoes.forEach(v -> v.validar(abrigo));
+
+        repository.save(
+                Abrigo.builder()
+                        .email(abrigo.email())
+                        .nome(abrigo.nome())
+                        .telefone(abrigo.telefone())
+                        .build());
     }
 
     public List<Pet> listarPets(String idOuNome) {
