@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -36,19 +37,15 @@ public class Pet {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @NotNull
     @Column(name = "tipo")
     private TipoPet tipo;
 
-    @NotBlank
     @Column(name = "nome")
     private String nome;
 
-    @NotBlank
     @Column(name = "raca")
     private String raca;
 
-    @NotNull
     @Column(name = "idade")
     private Integer idade;
 
@@ -63,10 +60,10 @@ public class Pet {
     @Column(name = "adotado")
     private Boolean adotado;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "abrigo_id")
     private Abrigo abrigo;
 
-    @OneToOne(mappedBy = "pet")
+    @OneToOne(mappedBy = "pet", fetch = FetchType.LAZY)
     private Adocao adocao;
 }
