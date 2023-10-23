@@ -14,11 +14,7 @@ public class ValidaDadosTutorJaCadastrado implements ValidacaoCadastroTutor {
 
     @Override
     public void validar(CadastroTutorDTO tutor) {
-
-        boolean telefoneJaCadastrado = tutorRepository.existsByTelefone(tutor.telefone());
-        boolean emailJaCadastrado = tutorRepository.existsByEmail(tutor.email());
-
-        if (telefoneJaCadastrado || emailJaCadastrado) {
+        if (tutorRepository.existsByEmailOrTelefone(tutor.email(), tutor.telefone())) {
             throw new ValidacaoException("Dados já cadastrados para outro tutor!");
         }
 
